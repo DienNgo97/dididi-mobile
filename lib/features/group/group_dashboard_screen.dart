@@ -312,8 +312,11 @@ class GroupDashboardScreen extends ConsumerWidget {
     }
   }
 
-  Future<void> _run(BuildContext context, WidgetRef ref, Future<void> Function() action, String okMsg) async {
-    final messenger = ScaffoldMessenger.of(context);
+  /// Nhận sẵn [messenger] thay vì BuildContext: hàm này hầu hết được gọi SAU khi một
+  /// hộp thoại đóng, lúc đó màn hình có thể đã bị huỷ và `ScaffoldMessenger.of(context)`
+  /// sẽ ném lỗi. Bên gọi lấy messenger TRƯỚC khi mở hộp thoại — nó thuộc MaterialApp
+  /// nên vẫn sống kể cả khi route bị pop, snackbar vẫn hiện được.
+  Future<void> _run(ScaffoldMessengerState messenger, WidgetRef ref, Future<void> Function() action, String okMsg) async {
     try {
       await action();
       ref.invalidate(groupDetailProvider(token));
@@ -326,6 +329,7 @@ class GroupDashboardScreen extends ConsumerWidget {
   }
 
   Future<void> _editGroup(BuildContext context, WidgetRef ref, GroupDetail d) async {
+    final messenger = ScaffoldMessenger.of(context);
     final nameC = TextEditingController(text: d.group.title ?? '');
     bool splitEven = false;
     final ok = await showDialog<bool>(
@@ -354,12 +358,13 @@ class GroupDashboardScreen extends ConsumerWidget {
       ),
     );
     if (ok != true) return;
-    await _run(context, ref, () => ref.read(groupRepositoryProvider).editGroup(token, title: nameC.text.trim(), splitEven: splitEven), trg('group.updated'));
+    await _run(messenger, ref, () => ref.read(groupRepositoryProvider).editGroup(token, title: nameC.text.trim(), splitEven: splitEven), trg('group.updated'));
   }
 
   Future<void> _toggleEndTrip(BuildContext context, WidgetRef ref, GroupDetail d) async {
+    final messenger = ScaffoldMessenger.of(context);
     if (d.group.ended) {
-      await _run(context, ref, () => ref.read(groupRepositoryProvider).reopenTrip(token), trg('group.tripReopened'));
+      await _run(messenger, ref, () => ref.read(groupRepositoryProvider).reopenTrip(token), trg('group.tripReopened'));
     } else {
       final ok = await showDialog<bool>(
         context: context,
@@ -373,7 +378,7 @@ class GroupDashboardScreen extends ConsumerWidget {
         ),
       );
       if (ok != true) return;
-      await _run(context, ref, () => ref.read(groupRepositoryProvider).endTrip(token), trg('group.tripEnded'));
+      await _run(messenger, ref, () => ref.read(groupRepositoryProvider).endTrip(token), trg('group.tripEnded'));
     }
   }
 
@@ -443,6 +448,7 @@ class GroupDashboardScreen extends ConsumerWidget {
   }
 
   Future<void> _deleteRoom(BuildContext context, WidgetRef ref, GroupMember m) async {
+    final messenger = ScaffoldMessenger.of(context);
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -455,11 +461,12 @@ class GroupDashboardScreen extends ConsumerWidget {
       ),
     );
     if (ok != true) return;
-    await _run(context, ref, () => ref.read(groupRepositoryProvider).deleteRoom(token, m.bookingCode), trg('group.roomDeleted'));
+    await _run(messenger, ref, () => ref.read(groupRepositoryProvider).deleteRoom(token, m.bookingCode), trg('group.roomDeleted'));
   }
 
   Future<void> _removeMember(BuildContext context, WidgetRef ref, GroupMember m) async {
     if (m.userId == null) return;
+    final messenger = ScaffoldMessenger.of(context);
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -472,6 +479,6 @@ class GroupDashboardScreen extends ConsumerWidget {
       ),
     );
     if (ok != true) return;
-    await _run(context, ref, () => ref.read(groupRepositoryProvider).removeMember(token, m.userId!), trg('group.memberRemoved'));
+    await _run(messenger, ref, () => ref.read(groupRepositoryProvider).removeMember(token, m.userId!), trg('group.memberRemoved'));
   }
 }

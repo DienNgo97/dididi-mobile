@@ -194,8 +194,12 @@ Future<Booking?> runPaymentFlow(BuildContext context, WidgetRef ref, Booking boo
       return null;
     }
   } else if (choice == 'vnpay') {
+    // Hộp thoại vừa đóng -> màn hình gọi hàm này có thể đã bị huỷ (người dùng bấm
+    // back khi mạng chậm). Dùng lại context lúc đó sẽ văng app.
+    if (!context.mounted) return null;
     return _vnpayFlow(context, ref, current);
   } else if (choice == 'company' && company != null) {
+    if (!context.mounted) return null;
     return _companyFlow(context, ref, current, company, messenger);
   }
   // 'later' hoặc đóng hộp thoại: đơn vẫn ở trạng thái chờ
