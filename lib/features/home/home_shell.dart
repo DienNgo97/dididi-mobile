@@ -28,9 +28,17 @@ class HomeShell extends ConsumerWidget {
     AccountScreen(),
   ];
 
+  /// Chuông thông báo + số chưa đọc.
+  ///
+  /// Mặc định Flutter đặt nhãn Badge ở góc trên-phải của con, lệch RA NGOÀI một chút
+  /// (offset (4, -4)). Khi nút chuông là action cuối của AppBar, nó nằm sát mép phải màn
+  /// hình nên phần nhãn thò ra bị AppBar cắt mất — con số hiện thiếu một góc.
+  /// Kéo nhãn vào trong bằng offset âm để nó luôn nằm gọn trong vùng 48x48 của nút.
   Widget _notifButton(BuildContext context, int unread) => Badge.count(
         count: unread,
         isLabelVisible: unread > 0,
+        alignment: AlignmentDirectional.topEnd,
+        offset: const Offset(-6, 6),
         child: IconButton(
             icon: const Icon(Icons.notifications_none),
             tooltip: trg('social.notifications'),

@@ -222,10 +222,6 @@ class ProfileScreen extends ConsumerWidget {
 
   Widget _badge(String label, bool ok) => StatusBadge(label, ok ? AppTheme.brand : const Color(0xFFC0392B));
 
-  void _toast(BuildContext context, String msg) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
-  }
-
   // ---------------- Ngày sinh (chương trình khuyến mãi sinh nhật) ----------------
   Future<void> _editBirthDate(BuildContext context, WidgetRef ref, Profile p) async {
     final messenger = ScaffoldMessenger.of(context);
