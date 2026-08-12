@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  analyze-test:
+    name: Analyze & test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Flutter version
+        run: flutter --version
+
+      - name: Get packages
+        run: flutter pub get
+
+      # --no-fatal-infos: chi FAIL khi co error/warning that su,
+      # khong fail vi goi y style (vd "dung const o day cho nhanh").
+      - name: Static analysis
+        run: flutter analyze --no-fatal-infos
+
+      - name: Unit tests
+        run: flutter test
+
+# GHI CHU: co tinh KHONG build APK/IPA o day.
+#
+# android/app/google-services.json va ios/Runner/GoogleService-Info.plist deu nam trong
+# .gitignore (dung vay - do la file cau hinh Firebase rieng cua du an). CI clone repo ve
+# se khong co 2 file do, ma plugin com.google.gms.google-services BAT BUOC phai co
+# google-services.json -> `flutter build apk` chac chan fail.
+#
+# Muon CI build duoc APK that thi lam nhu sau (khi nao can moi lam):
+#   1. Ma hoa file:  base64 -i android/app/google-services.json | pbcopy
+#   2. GitHub -> Settings -> Secrets and variables -> Actions -> New secret
+#      ten GOOGLE_SERVICES_JSON, dan chuoi base64 vao
+#   3. Them step truoc khi build:
+#        - run: echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 -d > android/app/google-services.json
+#   4. Them step:  - run: flutter build apk --debug
+#
+# Tuong tu voi khoa Google Maps trong AndroidManifest neu sau nay tach ra khoi ma nguon.
