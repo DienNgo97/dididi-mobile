@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/i18n/l10n.dart';
 import 'core/push/push_service.dart';
 import 'core/router/app_router.dart';
+import 'core/session/session_reset.dart';
 import 'core/theme/app_theme.dart';
 import 'features/auth/auth_providers.dart';
 import 'firebase_options.dart';
@@ -46,6 +47,12 @@ class DididiApp extends ConsumerWidget {
 
     // Khi trạng thái đăng nhập chuyển sang authenticated -> đăng ký token push.
     ref.listen(authControllerProvider, (prev, next) {
+      // Danh tính đổi (đăng nhập, đăng xuất, đổi tài khoản, hết phiên) thì phải
+      // xoá sạch dữ liệu đã tải của người trước. Nếu không, người dùng mới sẽ
+      // thấy đơn hàng / tin nhắn / yêu thích của người cũ — xem session_reset.dart.
+      if (prev != null && prev.email != next.email) {
+        xoaDuLieuPhienCu(ref.invalidate);
+      }
       if (next.status == AuthStatus.authenticated) {
         ref.read(pushServiceProvider).setup();
       }
