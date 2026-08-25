@@ -147,10 +147,14 @@ const accountStrings = <String, Map<String, String>>{
   'profile.phoneVerified': {'vi': 'Đã xác thực số điện thoại.', 'en': 'Phone number verified.', 'zh': '电话号码已验证。'},
   'profile.currentPassword': {'vi': 'Mật khẩu hiện tại', 'en': 'Current password', 'zh': '当前密码'},
   'profile.newPassword': {'vi': 'Mật khẩu mới', 'en': 'New password', 'zh': '新密码'},
+  // Phải khớp ĐÚNG quy tắc máy chủ ở AccountService.STRONG:
+  // ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$
+  // Trước đây app ghi nhẹ hơn thực tế nên người dùng đặt mật khẩu theo hướng dẫn
+  // vẫn bị máy chủ từ chối mà không hiểu vì sao (phát hiện khi test 24/08).
   'profile.passwordHint': {
-    'vi': 'Tối thiểu 8 ký tự, gồm chữ và số',
-    'en': 'At least 8 characters, letters and numbers',
-    'zh': '至少 8 位，包含字母和数字'
+    'vi': 'Tối thiểu 8 ký tự, gồm chữ in hoa, chữ thường, số và ký tự đặc biệt',
+    'en': 'At least 8 characters, with uppercase, lowercase, a number and a special character',
+    'zh': '至少 8 位，需含大写字母、小写字母、数字和特殊字符'
   },
   'profile.confirmNewPassword': {'vi': 'Xác nhận mật khẩu mới', 'en': 'Confirm new password', 'zh': '确认新密码'},
   'profile.change': {'vi': 'Đổi', 'en': 'Change', 'zh': '修改'},
@@ -231,7 +235,11 @@ const accountStrings = <String, Map<String, String>>{
     'en': 'Register as a vendor (sell rooms)',
     'zh': '注册成为供应商（出售房间）'
   },
-  'auth.passwordMin8': {'vi': 'Mật khẩu tối thiểu 8 ký tự', 'en': 'Password must be at least 8 characters', 'zh': '密码至少 8 位'},
+  'auth.passwordMin8': {
+    'vi': 'Mật khẩu cần tối thiểu 8 ký tự, gồm chữ in hoa, chữ thường, số và ký tự đặc biệt',
+    'en': 'Password needs at least 8 characters, with uppercase, lowercase, a number and a special character',
+    'zh': '密码至少 8 位，需含大写字母、小写字母、数字和特殊字符'
+  },
   'auth.registerSuccess': {
     'vi': 'Đăng ký thành công! Kiểm tra email để kích hoạt tài khoản.',
     'en': 'Sign-up successful! Check your email to activate your account.',
@@ -244,9 +252,9 @@ const accountStrings = <String, Map<String, String>>{
     'zh': '注册以预订房间、抢优惠并赚取积分。'
   },
   'auth.passwordMin8Label': {
-    'vi': 'Mật khẩu (tối thiểu 8 ký tự)',
-    'en': 'Password (at least 8 characters)',
-    'zh': '密码（至少 8 位）'
+    'vi': 'Mật khẩu (8+ ký tự, có hoa, thường, số, ký tự đặc biệt)',
+    'en': 'Password (8+ chars, upper, lower, number, symbol)',
+    'zh': '密码（8 位以上，含大小写、数字、符号）'
   },
   'auth.createAccountBtn': {'vi': 'Tạo tài khoản', 'en': 'Create account', 'zh': '创建账户'},
   'auth.registerGoogle': {'vi': 'Đăng ký với Google', 'en': 'Sign up with Google', 'zh': '使用 Google 注册'},
@@ -258,9 +266,9 @@ const accountStrings = <String, Map<String, String>>{
   },
   'auth.enterToken': {'vi': 'Nhập token trong email', 'en': 'Enter the token from the email', 'zh': '请输入邮件中的令牌'},
   'auth.newPasswordMin8': {
-    'vi': 'Mật khẩu mới tối thiểu 8 ký tự',
-    'en': 'New password must be at least 8 characters',
-    'zh': '新密码至少 8 位'
+    'vi': 'Mật khẩu mới cần tối thiểu 8 ký tự, gồm chữ in hoa, chữ thường, số và ký tự đặc biệt',
+    'en': 'New password needs at least 8 characters, with uppercase, lowercase, a number and a special character',
+    'zh': '新密码至少 8 位，需含大写字母、小写字母、数字和特殊字符'
   },
   'auth.resetSuccess': {
     'vi': 'Đặt lại mật khẩu thành công. Mời đăng nhập.',

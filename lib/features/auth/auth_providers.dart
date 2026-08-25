@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/network/api_client.dart';
+import '../../core/network/api_exception.dart';
 import '../../core/storage/token_storage.dart';
 import 'auth_repository.dart';
 
@@ -41,18 +42,43 @@ class AuthController extends Notifier<AuthState> {
   }
 
   Future<void> _bootstrap() async {
-    if (await _storage.hasToken) {
-      try {
-        final me = await _repo.me();
-        state = AuthState(AuthStatus.authenticated, email: me.email, role: me.role);
-      } catch (_) {
+    if (!await _storage.hasToken) {
+      state = const AuthState(AuthStatus.unauthenticated);
+      return;
+    }
+    try {
+      final me = await _repo.me();
+      state = AuthState(AuthStatus.authenticated, email: me.email, role: me.role);
+    } on ApiException catch (e) {
+      // PHẢI phân biệt hai chuyện hoàn toàn khác nhau:
+      //
+      //   1. Máy chủ nói token không còn hợp lệ (401/403)  -> xoá là đúng.
+      //   2. Chưa hỏi được máy chủ vì không có mạng        -> xoá là SAI.
+      //
+      // Trước ngày 24/08/2026 chỗ này dùng `catch (_)` nên gộp cả hai: mở app
+      // trong thang máy, trên máy bay hay chỗ sóng yếu là mất phiên đăng nhập
+      // VĨNH VIỄN, mạng về cũng phải đăng nhập lại. Phát hiện khi chạy TC-M-13
+      // trên máy ảo Android — mỗi lần hot restart lúc tắt mạng đều âm thầm
+      // xoá token.
+      if (_laLoiMang(e)) {
+        // Giữ token lại. Người dùng tạm thấy trạng thái khách, nhưng lần mở
+        // sau có mạng là vào thẳng, không phải đăng nhập lại.
+        state = const AuthState(AuthStatus.unauthenticated);
+      } else {
         await _storage.clear();
         state = const AuthState(AuthStatus.unauthenticated);
       }
-    } else {
+    } catch (_) {
+      // Lỗi lạ không rõ nguồn gốc: giữ token cho an toàn, thà bắt người dùng
+      // bấm đăng nhập một lần còn hơn xoá mất phiên của họ.
       state = const AuthState(AuthStatus.unauthenticated);
     }
   }
+
+  /// Lỗi thuộc tầng mạng chứ không phải máy chủ từ chối.
+  /// Mã do ApiClient gắn khi bọc DioException.
+  bool _laLoiMang(ApiException e) =>
+      e.code == 'OFFLINE' || e.code == 'TIMEOUT' || e.code == 'NETWORK';
 
   Future<void> login(String email, String password) async {
     final t = await _repo.login(email, password);

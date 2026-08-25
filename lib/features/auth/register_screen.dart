@@ -7,6 +7,7 @@ import '../../core/config/env.dart';
 import '../../core/i18n/l10n.dart';
 import '../../core/network/api_exception.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/utils/password_rule.dart';
 import 'auth_providers.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
@@ -31,7 +32,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   Future<void> _submit() async {
     FocusScope.of(context).unfocus();
-    if (_pw.text.length < 8) {
+    if (!matKhauDuManh(_pw.text)) {
       _snack(trg('auth.passwordMin8'));
       return;
     }
@@ -69,6 +70,15 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         return;
       }
       await ref.read(authControllerProvider.notifier).loginWithGoogle(idToken);
+      // Đăng ký bằng Google là đăng nhập luôn -> phải tự rời màn này.
+      // Không được trông chờ redirect của go_router: màn đăng ký được mở bằng
+      // push nên redirect vẫn thấy vị trí là trang bên dưới và sẽ không làm gì.
+      //
+      // Ở đây dùng go('/') chứ KHÔNG dùng pop(): màn đăng ký được mở TỪ màn
+      // đăng nhập, nên pop một lần chỉ rơi ngược về màn đăng nhập — cũng đang
+      // nằm đè và cũng sẽ kẹt. go('/') quét sạch cả chồng và về thẳng Home.
+      if (!mounted) return;
+      context.go('/');
     } on ApiException catch (e) {
       _snack(e.message);
     } catch (e) {

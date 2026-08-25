@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/i18n/l10n.dart';
 import '../../core/network/api_exception.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/utils/password_rule.dart';
 import '../../shared/ui/ui_kit.dart';
 import 'auth_providers.dart';
 
@@ -50,7 +51,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
 
   Future<void> _reset() async {
     if (_token.text.trim().isEmpty) return _snack(trg('auth.enterToken'));
-    if (_newPass.text.length < 8) return _snack(trg('auth.newPasswordMin8'));
+    if (!matKhauDuManh(_newPass.text)) return _snack(trg('auth.newPasswordMin8'));
     setState(() => _busy = true);
     try {
       await ref.read(authRepositoryProvider).resetPassword(_token.text.trim(), _newPass.text);

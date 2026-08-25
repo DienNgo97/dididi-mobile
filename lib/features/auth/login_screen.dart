@@ -28,12 +28,37 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     super.dispose();
   }
 
+  /// Rời màn đăng nhập sau khi xác thực thành công.
+  ///
+  /// KHÔNG được phó thác việc này cho `redirect` của go_router. Màn đăng nhập
+  /// thường được mở bằng `context.push('/login')` (xem home_shell, hotel_list,
+  /// hotel_detail), tức là một trang MỆNH LỆNH đặt chồng lên vị trí hiện tại.
+  /// Vị trí mà `redirect` nhìn thấy vẫn là trang bên dưới (`/`), nên nó kết luận
+  /// "đang ở đúng chỗ rồi" và không làm gì cả — trang đăng nhập nằm nguyên đó,
+  /// người dùng tưởng app hỏng và bấm lại nhiều lần. Lỗi này đã tái hiện được
+  /// trên máy ảo Android ngày 24/08.
+  ///
+  /// PHẢI dùng `go` chứ KHÔNG dùng `pop`. Đã thử `pop` ngày 24/08 và hỏng:
+  /// đúng lúc đăng nhập xong thì trạng thái đổi cũng kích `refreshListenable`
+  /// của go_router, khiến nó dựng lại vị trí hiện tại — mà vị trí đó vẫn đang
+  /// là `/login`. Hai việc chạy đua, cú dựng lại thắng: màn đăng nhập cũ bị
+  /// huỷ và một màn đăng nhập MỚI mọc lên ngay chỗ đó (form trống trơn).
+  /// `go` đặt vị trí một cách tuyệt đối nên không có cuộc đua nào cả.
+  ///
+  /// Tôn trọng tham số `from` nếu nơi gọi có truyền, để người dùng quay lại
+  /// đúng chỗ họ đang đứng (ví dụ đang xem một khách sạn thì bị hỏi đăng nhập).
+  void _roiManDangNhap() {
+    if (!mounted) return;
+    final from = GoRouterState.of(context).uri.queryParameters['from'];
+    context.go((from != null && from.isNotEmpty) ? from : '/');
+  }
+
   Future<void> _submit() async {
     FocusScope.of(context).unfocus();
     setState(() => _loading = true);
     try {
       await ref.read(authControllerProvider.notifier).login(_email.text.trim(), _pw.text);
-      // Router tự chuyển sang Home khi trạng thái = authenticated.
+      _roiManDangNhap();
     } on ApiException catch (e) {
       _snack(e.message);
     } catch (_) {
@@ -60,7 +85,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         return;
       }
       await ref.read(authControllerProvider.notifier).loginWithGoogle(idToken);
-      // Router tự chuyển sang Home khi authenticated.
+      _roiManDangNhap();
     } on ApiException catch (e) {
       _snack(e.message);
     } catch (e) {
@@ -119,7 +144,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           await ref
                               .read(authControllerProvider.notifier)
                               .loginWithOtp(emailC.text.trim(), codeC.text.trim());
-                          if (ctx.mounted) Navigator.pop(ctx);
+                          if (ctx.mounted) Navigator.pop(ctx); // đóng hộp thoại OTP
+                          _roiManDangNhap();                   // rồi mới rời màn đăng nhập
                         }
                       } on ApiException catch (e) {
                         setS(() => busy = false);
