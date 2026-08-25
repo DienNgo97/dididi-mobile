@@ -26,6 +26,19 @@ class HotelDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(hotelDetailProvider(id));
+    // Theo dõi luôn ở ĐÂY (widget cha) dù giá trị dùng ở _RatingBadge bên dưới.
+    //
+    // Vì sao: trước đây chỉ mình _RatingBadge watch provider này. Khung hình đầu nó trả về
+    // một Text ("Chưa có đánh giá"); khi dữ liệu về, RIÊNG nhánh đó dựng lại và đổi sang Row.
+    // Lượt bố trí lẻ giữa chừng đó rơi đúng lúc cây semantics của Flutter 3.44.4 đang hỏng
+    // (assertion !semantics.parentDataDirty), khiến render object không được gán vị trí —
+    // badge bị vẽ ở gốc toạ độ, đè lên tên khách sạn, và chiếm 0 pixel chiều cao.
+    // Watch ở cha khiến cả trang dựng lại MỘT LƯỢT khi dữ liệu về, không còn bố trí lẻ.
+    // CHỈ watch reviews. ĐỪNG thêm hotelRoomsProvider / hotelImagesProvider vào đây:
+    // đã thử ngày 23/08 và cả trang chi tiết trắng trơn — càng nhiều provider watch ở cha
+    // thì mỗi lần dữ liệu về lại kéo theo một lượt dựng lại toàn trang, va vào đúng lỗi
+    // semantics của Flutter 3.44.4 và làm hỏng cả thân trang thay vì chỉ một widget.
+    ref.watch(hotelReviewsProvider(id));
     return Scaffold(
       appBar: AppBar(
         title: Text(trg('hotel.detailTitle')),
@@ -33,7 +46,7 @@ class HotelDetailScreen extends ConsumerWidget {
       ),
       body: async.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => ErrorView(message: e.toString(), onRetry: () => ref.invalidate(hotelDetailProvider(id))),
+        error: (e, _) => ErrorView(error: e, onRetry: () => ref.invalidate(hotelDetailProvider(id))),
         data: (h) => _body(context, h),
       ),
     );

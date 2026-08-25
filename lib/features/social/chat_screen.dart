@@ -95,7 +95,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             child: async.when(
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (e, _) => ErrorView(
-                  message: e.toString(), onRetry: () => ref.invalidate(conversationMessagesProvider(widget.convId))),
+                  error: e, onRetry: () => ref.invalidate(conversationMessagesProvider(widget.convId))),
               data: (msgs) {
                 if (msgs.isEmpty) {
                   return EmptyState(

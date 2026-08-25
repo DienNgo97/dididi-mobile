@@ -193,7 +193,7 @@ class _FlightBookingScreenState extends ConsumerState<FlightBookingScreen> {
       body: async.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => ErrorView(
-            message: e.toString(), onRetry: () => ref.invalidate(flightDetailProvider(widget.flightId))),
+            error: e, onRetry: () => ref.invalidate(flightDetailProvider(widget.flightId))),
         data: (f) => _body(f),
       ),
     );

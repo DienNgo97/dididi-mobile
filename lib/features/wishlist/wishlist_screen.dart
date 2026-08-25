@@ -20,7 +20,7 @@ class WishlistScreen extends ConsumerWidget {
       appBar: AppBar(title: Text(trg('hotel.wishlistTitle'))),
       body: async.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => ErrorView(message: e.toString(), onRetry: () => ref.invalidate(wishlistProvider)),
+        error: (e, _) => ErrorView(error: e, onRetry: () => ref.invalidate(wishlistProvider)),
         data: (list) {
           if (list.isEmpty) {
             return EmptyState(

@@ -27,7 +27,7 @@ class HashtagScreen extends ConsumerWidget {
       appBar: AppBar(title: Text('#$tag')),
       body: async.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => ErrorView(message: e.toString(), onRetry: () => ref.invalidate(hashtagPostsProvider(tag))),
+        error: (e, _) => ErrorView(error: e, onRetry: () => ref.invalidate(hashtagPostsProvider(tag))),
         data: (page) {
           if (page.items.isEmpty) {
             return EmptyState(

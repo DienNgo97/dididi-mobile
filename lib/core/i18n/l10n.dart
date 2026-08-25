@@ -81,6 +81,26 @@ class L10n {
     'common.loading': {'vi': 'Đang tải…', 'en': 'Loading…', 'zh': '加载中…'},
     'common.error': {'vi': 'Đã xảy ra lỗi, vui lòng thử lại.', 'en': 'Something went wrong, please try again.', 'zh': '出错了，请重试。'},
     'common.errorShort': {'vi': 'Rất tiếc! Đã xảy ra lỗi.', 'en': 'Oops! Something went wrong.', 'zh': '哎呀，出错了。'},
+    'err.offline': {
+      'vi': 'Không có kết nối mạng. Kiểm tra Wi-Fi hoặc dữ liệu di động rồi thử lại.',
+      'en': 'No internet connection. Check your Wi-Fi or mobile data, then try again.',
+      'zh': '没有网络连接。请检查 Wi-Fi 或移动数据后重试。'
+    },
+    'err.timeout': {
+      'vi': 'Máy chủ phản hồi quá lâu. Mạng có thể đang chậm — thử lại giúp nhé.',
+      'en': 'The server took too long to respond. Your connection may be slow — please try again.',
+      'zh': '服务器响应超时。网络可能较慢，请重试。'
+    },
+    'err.server': {
+      'vi': 'Máy chủ đang gặp sự cố. Vui lòng thử lại sau ít phút.',
+      'en': 'The server is having trouble. Please try again in a few minutes.',
+      'zh': '服务器出现问题。请稍后再试。'
+    },
+    'err.session': {
+      'vi': 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.',
+      'en': 'Your session has expired. Please sign in again.',
+      'zh': '登录已过期，请重新登录。'
+    },
     'common.noData': {'vi': 'Chưa có dữ liệu.', 'en': 'No data yet.', 'zh': '暂无数据。'},
     'common.required': {'vi': 'Bắt buộc', 'en': 'Required', 'zh': '必填'},
     'common.optional': {'vi': 'tuỳ chọn', 'en': 'optional', 'zh': '可选'},

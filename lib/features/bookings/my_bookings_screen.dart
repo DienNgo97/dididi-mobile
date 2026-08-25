@@ -35,7 +35,7 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
     final async = ref.watch(myBookingsProvider);
     return async.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => ErrorView(message: e.toString(), onRetry: () => ref.invalidate(myBookingsProvider)),
+      error: (e, _) => ErrorView(error: e, onRetry: () => ref.invalidate(myBookingsProvider)),
       data: (all) {
         if (all.isEmpty) {
           return EmptyState(

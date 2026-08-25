@@ -40,7 +40,7 @@ class _ReturnFlightScreenState extends ConsumerState<ReturnFlightScreen> {
       body: outAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => ErrorView(
-            message: e.toString(), onRetry: () => ref.invalidate(flightDetailProvider(widget.outboundId))),
+            error: e, onRetry: () => ref.invalidate(flightDetailProvider(widget.outboundId))),
         data: (outbound) {
           _future ??= _searchReturn(outbound);
           return FutureBuilder<List<Flight>>(
@@ -51,7 +51,7 @@ class _ReturnFlightScreenState extends ConsumerState<ReturnFlightScreen> {
               }
               if (snap.hasError) {
                 return ErrorView(
-                    message: snap.error.toString(),
+                    error: snap.error,
                     onRetry: () => setState(() => _future = _searchReturn(outbound)));
               }
               final all = snap.data ?? const <Flight>[];

@@ -28,7 +28,7 @@ class _SocialProfileScreenState extends ConsumerState<SocialProfileScreen> {
   List<Post> _posts = [];
   bool _loading = true;
   bool _busy = false;
-  String? _error;
+  Object? _error; // giữ lỗi THÔ để ErrorView tự dịch sang câu tiếng người
   late String _handle = widget.handle; // handle hiện tại (đổi khi user đổi @handle)
 
   @override
@@ -55,7 +55,7 @@ class _SocialProfileScreenState extends ConsumerState<SocialProfileScreen> {
         }
       }
     } catch (e) {
-      if (mounted) setState(() => _error = e.toString());
+      if (mounted) setState(() => _error = e);
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -213,7 +213,7 @@ class _SocialProfileScreenState extends ConsumerState<SocialProfileScreen> {
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
-              ? ErrorView(message: _error!, onRetry: _load)
+              ? ErrorView(error: _error, onRetry: _load)
               : _body(_p!),
     );
   }

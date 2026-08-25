@@ -81,7 +81,7 @@ class DmInboxScreen extends ConsumerWidget {
       ),
       body: async.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => ErrorView(message: e.toString(), onRetry: () => ref.invalidate(dmInboxProvider)),
+        error: (e, _) => ErrorView(error: e, onRetry: () => ref.invalidate(dmInboxProvider)),
         data: (list) {
           if (list.isEmpty) {
             return EmptyState(

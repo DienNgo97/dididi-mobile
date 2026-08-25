@@ -102,7 +102,7 @@ class _HotelMapScreenState extends ConsumerState<HotelMapScreen> {
       body: async.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) =>
-            ErrorView(message: e.toString(), onRetry: () => ref.read(hotelListProvider.notifier).refresh()),
+            ErrorView(error: e, onRetry: () => ref.read(hotelListProvider.notifier).refresh()),
         data: (all) {
           final geo = all.where((h) => h.lat != null && h.lng != null).toList();
           final markers = <Marker>{

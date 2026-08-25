@@ -336,7 +336,7 @@ class _HotelListScreenState extends ConsumerState<HotelListScreen> {
               SliverFillRemaining(
                 hasScrollBody: false,
                 child: ErrorView(
-                    message: e.toString(), onRetry: () => ref.read(hotelListProvider.notifier).refresh()),
+                    error: e, onRetry: () => ref.read(hotelListProvider.notifier).refresh()),
               ),
             ],
             data: (all) {

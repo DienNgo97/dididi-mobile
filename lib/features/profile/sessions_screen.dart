@@ -31,7 +31,7 @@ class SessionsScreen extends ConsumerWidget {
       ),
       body: async.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => ErrorView(message: e.toString(), onRetry: () => ref.invalidate(sessionsProvider)),
+        error: (e, _) => ErrorView(error: e, onRetry: () => ref.invalidate(sessionsProvider)),
         data: (list) => RefreshIndicator(
           onRefresh: () async => ref.invalidate(sessionsProvider),
           child: list.isEmpty

@@ -24,7 +24,7 @@ class CommunityFeedScreen extends ConsumerWidget {
     final async = ref.watch(feedProvider);
     return async.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => ErrorView(message: e.toString(), onRetry: () => ref.invalidate(feedProvider)),
+      error: (e, _) => ErrorView(error: e, onRetry: () => ref.invalidate(feedProvider)),
       data: (posts) {
         if (posts.isEmpty) {
           return RefreshIndicator(

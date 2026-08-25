@@ -199,7 +199,7 @@ class _HotelBookingScreenState extends ConsumerState<HotelBookingScreen> {
             child: roomsAsync.when(
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (e, _) => ErrorView(
-                  message: e.toString(), onRetry: () => ref.invalidate(hotelRoomsProvider(widget.hotelId))),
+                  error: e, onRetry: () => ref.invalidate(hotelRoomsProvider(widget.hotelId))),
               data: (rooms) {
                 _applyPreselect(rooms);
                 return rooms.isEmpty ? _empty() : _form(rooms);

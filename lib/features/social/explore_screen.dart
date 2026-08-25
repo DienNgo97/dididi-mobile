@@ -29,7 +29,7 @@ class ExploreScreen extends ConsumerWidget {
       appBar: AppBar(title: Text(trg('social.explore'))),
       body: async.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => ErrorView(message: e.toString(), onRetry: () => ref.invalidate(exploreProvider)),
+        error: (e, _) => ErrorView(error: e, onRetry: () => ref.invalidate(exploreProvider)),
         data: (page) {
           return RefreshIndicator(
             onRefresh: () async {

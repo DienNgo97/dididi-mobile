@@ -26,7 +26,7 @@ class BookmarksScreen extends ConsumerWidget {
       appBar: AppBar(title: Text(trg('social.bookmarks'))),
       body: async.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => ErrorView(message: e.toString(), onRetry: () => ref.invalidate(bookmarksProvider)),
+        error: (e, _) => ErrorView(error: e, onRetry: () => ref.invalidate(bookmarksProvider)),
         data: (posts) {
           if (posts.isEmpty) {
             return EmptyState(

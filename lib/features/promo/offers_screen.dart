@@ -26,7 +26,7 @@ class OffersScreen extends ConsumerWidget {
       body: async.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) =>
-            ErrorView(message: e.toString(), onRetry: () => ref.invalidate(myOffersProvider)),
+            ErrorView(error: e, onRetry: () => ref.invalidate(myOffersProvider)),
         data: (all) {
           if (all.isEmpty) {
             return EmptyState(

@@ -32,7 +32,7 @@ class HotelCommunityScreen extends ConsumerWidget {
       appBar: AppBar(title: Text(hotelName ?? trg('social.hotelCommunity'))),
       body: async.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => ErrorView(message: e.toString(), onRetry: () => ref.invalidate(hotelPostsProvider(hotelId))),
+        error: (e, _) => ErrorView(error: e, onRetry: () => ref.invalidate(hotelPostsProvider(hotelId))),
         data: (posts) {
           if (posts.isEmpty) {
             return EmptyState(

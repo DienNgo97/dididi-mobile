@@ -22,7 +22,7 @@ class ProfileScreen extends ConsumerWidget {
       appBar: AppBar(title: Text(trg('profile.title'))),
       body: async.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => ErrorView(message: e.toString(), onRetry: () => ref.invalidate(profileProvider)),
+        error: (e, _) => ErrorView(error: e, onRetry: () => ref.invalidate(profileProvider)),
         data: (p) => _body(context, ref, p),
       ),
     );

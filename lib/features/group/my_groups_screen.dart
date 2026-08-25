@@ -53,7 +53,7 @@ class MyGroupsScreen extends ConsumerWidget {
       ),
       body: async.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => ErrorView(message: e.toString(), onRetry: () => ref.invalidate(myGroupsProvider)),
+        error: (e, _) => ErrorView(error: e, onRetry: () => ref.invalidate(myGroupsProvider)),
         data: (groups) {
           if (groups.isEmpty) {
             return EmptyState(

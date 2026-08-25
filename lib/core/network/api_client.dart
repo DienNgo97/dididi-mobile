@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 
 import '../config/env.dart';
+import '../i18n/l10n.dart';
 import '../storage/token_storage.dart';
 import 'api_exception.dart';
 
@@ -132,6 +133,32 @@ class ApiClient {
       final msg = (data['message'] ?? 'Đã xảy ra lỗi, vui lòng thử lại').toString();
       return ApiException(code, msg, e.response?.statusCode);
     }
-    return ApiException('NETWORK', e.message ?? 'Không kết nối được máy chủ', e.response?.statusCode);
+    // KHÔNG dùng e.message của Dio: đó là câu tiếng Anh dành cho lập trình viên
+    // ("The connection errored: Connection failed This indicates an error which
+    // most likely cannot be solved by the library."). Trước ngày 24/08/2026 nó
+    // được nhét thẳng vào đây rồi hiện nguyên văn lên mặt người dùng ở cả 44
+    // màn hình.
+    //
+    // Gắn CẢ mã phân loại lẫn câu đã dịch: mã để tầng trên xử lý theo loại,
+    // còn câu để những chỗ hiển thị thẳng `e.message` (các snackbar) không bị
+    // trống trơn.
+    final ma = _maLoiMang(e);
+    return ApiException(ma, trg(ma == 'TIMEOUT' ? 'err.timeout' : 'err.offline'), e.response?.statusCode);
+  }
+
+  /// Phân loại lỗi tầng mạng thành mã ổn định, không phụ thuộc ngôn ngữ.
+  String _maLoiMang(DioException e) {
+    switch (e.type) {
+      case DioExceptionType.connectionTimeout:
+      case DioExceptionType.sendTimeout:
+      case DioExceptionType.receiveTimeout:
+      case DioExceptionType.transformTimeout:
+        return 'TIMEOUT';
+      case DioExceptionType.connectionError:
+      case DioExceptionType.badCertificate:
+        return 'OFFLINE';
+      default:
+        return 'NETWORK';
+    }
   }
 }

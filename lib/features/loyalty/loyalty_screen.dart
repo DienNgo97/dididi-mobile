@@ -39,7 +39,7 @@ class _LoyaltyScreenState extends ConsumerState<LoyaltyScreen> {
       appBar: AppBar(title: Text(trg('rewards'))),
       body: accAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => ErrorView(message: e.toString(), onRetry: () => ref.invalidate(loyaltyAccountProvider)),
+        error: (e, _) => ErrorView(error: e, onRetry: () => ref.invalidate(loyaltyAccountProvider)),
         data: (acc) => ListView(
           padding: const EdgeInsets.all(16),
           children: [

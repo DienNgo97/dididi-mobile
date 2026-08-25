@@ -282,7 +282,7 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
                   loading: () => const Padding(
                       padding: EdgeInsets.all(24), child: Center(child: CircularProgressIndicator())),
                   error: (e, _) => ErrorView(
-                      message: e.toString(), onRetry: () => ref.invalidate(postDetailProvider(widget.postId))),
+                      error: e, onRetry: () => ref.invalidate(postDetailProvider(widget.postId))),
                   data: _postHeader,
                 ),
                 const SizedBox(height: 18),

@@ -20,7 +20,7 @@ class BookingLoaderScreen extends ConsumerWidget {
       ),
       error: (e, _) => Scaffold(
         appBar: AppBar(title: Text(trg('booking.detailTitle'))),
-        body: ErrorView(message: e.toString(), onRetry: () => ref.invalidate(_bookingByCodeProvider(code))),
+        body: ErrorView(error: e, onRetry: () => ref.invalidate(_bookingByCodeProvider(code))),
       ),
       data: (b) => BookingDetailScreen(booking: b),
     );

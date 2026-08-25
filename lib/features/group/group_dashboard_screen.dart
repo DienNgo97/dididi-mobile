@@ -42,7 +42,7 @@ class GroupDashboardScreen extends ConsumerWidget {
       ),
       body: async.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => ErrorView(message: e.toString(), onRetry: () => ref.invalidate(groupDetailProvider(token))),
+        error: (e, _) => ErrorView(error: e, onRetry: () => ref.invalidate(groupDetailProvider(token))),
         data: (d) => RefreshIndicator(
           onRefresh: () async => ref.invalidate(groupDetailProvider(token)),
           child: _body(context, ref, d),

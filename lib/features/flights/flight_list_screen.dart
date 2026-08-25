@@ -80,7 +80,7 @@ class _FlightListScreenState extends ConsumerState<FlightListScreen> {
           child: async.when(
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (e, _) =>
-                ErrorView(message: e.toString(), onRetry: () => ref.invalidate(flightSearchProvider)),
+                ErrorView(error: e, onRetry: () => ref.invalidate(flightSearchProvider)),
             data: (flights) {
               if (flights.isEmpty) {
                 return EmptyState(
