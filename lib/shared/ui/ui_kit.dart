@@ -91,7 +91,12 @@ class AppCard extends StatelessWidget {
         border: border ? Border.all(color: AppTheme.line) : null,
         boxShadow: const [BoxShadow(color: Color(0x0F000000), blurRadius: 10, offset: Offset(0, 3))],
       ),
-      child: child,
+      // Material trong suốt để các widget Material (ListTile, InkWell...) đặt bên trong thẻ
+      // tìm được tổ tiên Material. Thiếu nó, ListTile nằm ngay trong Container CÓ MÀU NỀN sẽ
+      // ném assertion "ListTile background color or ink splashes may be invisible" — assertion
+      // này làm hỏng cây semantics và kéo theo lỗi layout ở màn khác (badge vẽ sai vị trí,
+      // trang trắng). MaterialType.transparency không vẽ gì nên giao diện giữ nguyên.
+      child: Material(type: MaterialType.transparency, child: child),
     );
     if (onTap != null) {
       card = Material(

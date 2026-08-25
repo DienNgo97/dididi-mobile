@@ -2,10 +2,15 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <!-- enableOnBackInvokedCallback: Android 13+ dùng cơ chế Back mới (predictive
+         back). Không bật cờ này thì mỗi lần bấm Back log lại cảnh báo và app
+         không nhận được cử chỉ vuốt-để-quay-lại kiểu mới. Bật theo khuyến nghị
+         của Android; phát hiện thiếu khi chạy bộ test mobile 24/08/2026. -->
     <application
         android:label="dididi_mobile"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:enableOnBackInvokedCallback="true">
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAJ7AqiuCeUV4OYIVOg34A4UzG7ED2RdWM"/>
