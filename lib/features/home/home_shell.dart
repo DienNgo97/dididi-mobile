@@ -34,7 +34,20 @@ class HomeShell extends ConsumerWidget {
   /// (offset (4, -4)). Khi nút chuông là action cuối của AppBar, nó nằm sát mép phải màn
   /// hình nên phần nhãn thò ra bị AppBar cắt mất — con số hiện thiếu một góc.
   /// Kéo nhãn vào trong bằng offset âm để nó luôn nằm gọn trong vùng 48x48 của nút.
-  Widget _notifButton(BuildContext context, int unread) => Badge.count(
+  Widget _notifButton(BuildContext context, int unread) {
+    final mq = MediaQuery.of(context);
+    // Chặn huy hiệu nở theo cỡ chữ hệ thống.
+    //
+    // `offset` là khoảng lệch CỐ ĐỊNH tính bằng điểm ảnh logic. Khi người dùng
+    // đặt cỡ chữ hệ thống lên 1,5× thì con số bên trong to ra nhưng khoảng lệch
+    // không đổi, nên huy hiệu tràn qua mép phải màn hình và bị cắt mất một phần
+    // — nút chuông vốn đã nằm sát mép. Phát hiện khi chạy TC-M-25 ngày 25/08/2026.
+    //
+    // Huy hiệu đếm số là CHỈ BÁO chứ không phải nội dung để đọc, nên giới hạn
+    // mức phóng ở 1,2× là hợp lý: người cần chữ to vẫn đọc được, mà không vỡ bố cục.
+    return MediaQuery(
+      data: mq.copyWith(textScaler: mq.textScaler.clamp(maxScaleFactor: 1.2)),
+      child: Badge.count(
         count: unread,
         isLabelVisible: unread > 0,
         alignment: AlignmentDirectional.topEnd,
@@ -43,7 +56,9 @@ class HomeShell extends ConsumerWidget {
             icon: const Icon(Icons.notifications_none),
             tooltip: trg('social.notifications'),
             onPressed: () => context.push('/notifications')),
-      );
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
