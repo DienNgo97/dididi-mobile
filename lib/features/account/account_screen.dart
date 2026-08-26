@@ -154,6 +154,23 @@ class AccountScreen extends ConsumerWidget {
                 onTap: () => context.push('/wishlist'),
               ),
               const SoftDivider(),
+              // Đăng ký làm nhà cung cấp.
+              //
+              // Trước ngày 26/08/2026 lối vào DUY NHẤT nằm ở màn Đăng nhập, nên
+              // người đang dùng app phải đăng xuất mới tìm thấy đường — trong khi
+              // đó chính là nhóm ứng viên tự nhiên nhất. Phát hiện khi chạy TC-M-33.
+              //
+              // Phụ đề nói rõ đây là TẠO TÀI KHOẢN ĐỐI TÁC RIÊNG chứ không nâng
+              // cấp tài khoản hiện tại, vì biểu mẫu có ô email + mật khẩu mới và
+              // máy chủ tạo một tài khoản khác ở trạng thái chờ duyệt.
+              ListTile(
+                leading: const Icon(Icons.storefront_outlined, color: AppTheme.brand),
+                title: Text(trg('vendor.title')),
+                subtitle: Text(trg('account.vendorSub')),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => context.push('/vendor-register'),
+              ),
+              const SoftDivider(),
               ListTile(
                 leading: const Icon(Icons.description_outlined, color: AppTheme.brand),
                 title: Text(tr(ref, 'account.terms')),

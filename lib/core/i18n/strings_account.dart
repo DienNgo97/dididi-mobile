@@ -512,6 +512,15 @@ const accountStrings = <String, Map<String, String>>{
   'support.callHotline': {'vi': 'Gọi tổng đài {v}', 'en': 'Call hotline {v}', 'zh': '拨打热线 {v}'},
   'support.inputHint': {'vi': 'Nhập câu hỏi của bạn…', 'en': 'Type your question…', 'zh': '输入你的问题…'},
 
+  // Phụ đề mục "Đăng ký làm nhà cung cấp" trong menu Tài khoản. Nói rõ đây là
+  // TẠO TÀI KHOẢN ĐỐI TÁC RIÊNG, vì biểu mẫu hỏi email + mật khẩu mới và máy chủ
+  // tạo một tài khoản khác ở trạng thái chờ duyệt — không nâng cấp tài khoản đang dùng.
+  'account.vendorSub': {
+    'vi': 'Tạo tài khoản đối tác riêng để bán phòng',
+    'en': 'Create a separate partner account to sell rooms',
+    'zh': '创建独立的合作伙伴账户以出售房间'
+  },
+
   // ---------------- Nhà cung cấp (vendor.*) ----------------
   'vendor.title': {'vi': 'Đăng ký làm nhà cung cấp', 'en': 'Register as a vendor', 'zh': '注册成为供应商'},
   'vendor.successTitle': {'vi': 'Đăng ký thành công', 'en': 'Registration successful', 'zh': '注册成功'},

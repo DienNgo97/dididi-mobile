@@ -27,6 +27,9 @@ dependencies:
   google_sign_in: ^6.2.1
   video_player: ^2.9.2
   google_fonts: ^6.2.1
+  # Đọc tên máy thật (vd "Pixel 7", "iPhone 15 Pro") để gửi kèm khi đăng nhập,
+  # nhờ đó màn "Thiết bị đăng nhập" phân biệt được từng phiên. Xem device_name.dart.
+  device_info_plus: ^10.1.2
 
 dev_dependencies:
   flutter_test:

@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 
 import '../config/env.dart';
+import '../device/device_name.dart';
 import '../i18n/l10n.dart';
 import '../storage/token_storage.dart';
 import 'api_exception.dart';
@@ -29,6 +30,13 @@ class ApiClient {
         final token = await _storage.access;
         if (token != null && token.isNotEmpty) {
           options.headers['Authorization'] = 'Bearer $token';
+        }
+        // Tên máy để máy chủ ghi vào nhãn phiên đăng nhập (xem device_name.dart).
+        // Gắn cho MỌI yêu cầu chứ không riêng lúc đăng nhập, vì token còn được
+        // phát lại khi làm mới phiên — lúc đó cũng cần đúng nhãn.
+        final ten = await DeviceName.lay();
+        if (ten.isNotEmpty) {
+          options.headers['X-Device-Name'] = ten;
         }
         handler.next(options);
       },
