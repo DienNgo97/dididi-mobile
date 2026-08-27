@@ -94,12 +94,23 @@ final featuredHotelsProvider = FutureProvider<List<Hotel>>((ref) async {
 });
 
 /// Chi tiết 1 khách sạn.
-final hotelDetailProvider = FutureProvider.family<Hotel, int>(
+///
+/// autoDispose: huỷ kết quả khi rời trang, nên lần mở sau tải lại từ đầu và
+/// người dùng luôn thấy giá + tình trạng phòng mới nhất. Đó là lý do CHÍNH.
+///
+/// Ghi chú lịch sử (27/08/2026): bốn provider của trang chi tiết được đổi sang
+/// autoDispose trong lúc truy lỗi "mở lần hai thì trắng trang". Việc đổi này
+/// làm trang hiện lại được, nhưng nó chỉ CHE lỗi chứ không phải bản vá:
+/// giữ kết quả cũ khiến nội dung dựng ngay khung hình đầu, và chính cú dựng đó
+/// làm lộ một nút có chiều rộng tối thiểu vô hạn nằm trong Row — xem
+/// `hotel_detail_screen.dart` chỗ nút "Đặt" của thẻ hạng phòng và
+/// `app_theme.dart` chỗ `minimumSize`. Nguyên nhân gốc đã được sửa ở đó.
+final hotelDetailProvider = FutureProvider.autoDispose.family<Hotel, int>(
   (ref, id) => ref.read(hotelRepositoryProvider).detail(id),
 );
 
 /// Loại phòng của 1 khách sạn (để đặt phòng).
-final hotelRoomsProvider = FutureProvider.family<List<RoomType>, int>(
+final hotelRoomsProvider = FutureProvider.autoDispose.family<List<RoomType>, int>(
   (ref, hotelId) => ref.read(hotelRepositoryProvider).rooms(hotelId),
 );
 
@@ -117,6 +128,6 @@ final hotelCoverProvider = FutureProvider.family<String?, int>(
 );
 
 /// Tất cả ảnh 1 khách sạn (gallery ở màn chi tiết).
-final hotelImagesProvider = FutureProvider.family<List<String>, int>(
+final hotelImagesProvider = FutureProvider.autoDispose.family<List<String>, int>(
   (ref, hotelId) => ref.read(hotelRepositoryProvider).images(hotelId),
 );

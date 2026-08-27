@@ -39,5 +39,5 @@ class ReviewRepository {
       );
 }
 
-final hotelReviewsProvider =
-    FutureProvider.family<ReviewSummary, int>((ref, id) => ref.read(reviewRepositoryProvider).hotelReviews(id));
+final hotelReviewsProvider = FutureProvider.autoDispose
+    .family<ReviewSummary, int>((ref, id) => ref.read(reviewRepositoryProvider).hotelReviews(id));

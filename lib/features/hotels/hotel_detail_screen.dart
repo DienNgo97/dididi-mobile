@@ -34,11 +34,11 @@ class HotelDetailScreen extends ConsumerWidget {
     // (assertion !semantics.parentDataDirty), khiến render object không được gán vị trí —
     // badge bị vẽ ở gốc toạ độ, đè lên tên khách sạn, và chiếm 0 pixel chiều cao.
     // Watch ở cha khiến cả trang dựng lại MỘT LƯỢT khi dữ liệu về, không còn bố trí lẻ.
-    // CHỈ watch reviews. ĐỪNG thêm hotelRoomsProvider / hotelImagesProvider vào đây:
-    // đã thử ngày 23/08 và cả trang chi tiết trắng trơn — càng nhiều provider watch ở cha
-    // thì mỗi lần dữ liệu về lại kéo theo một lượt dựng lại toàn trang, va vào đúng lỗi
-    // semantics của Flutter 3.44.4 và làm hỏng cả thân trang thay vì chỉ một widget.
+    // CHỈ watch reviews. Không cần thêm hotelRoomsProvider / hotelImagesProvider vào đây —
+    // hai phần đó tự quản trạng thái tải của mình, watch ở cha chỉ làm cả trang
+    // dựng lại thừa mỗi khi một trong hai có dữ liệu.
     ref.watch(hotelReviewsProvider(id));
+    final h = async.asData?.value;
     return Scaffold(
       appBar: AppBar(
         title: Text(trg('hotel.detailTitle')),
@@ -49,14 +49,34 @@ class HotelDetailScreen extends ConsumerWidget {
         error: (e, _) => ErrorView(error: e, onRetry: () => ref.invalidate(hotelDetailProvider(id))),
         data: (h) => _body(context, h),
       ),
+      // Thanh "Đặt phòng" đặt ở bottomNavigationBar của Scaffold thay vì lồng
+      // `Column > Expanded > ListView` + thanh nút như trước 27/08/2026.
+      // Đây là cấu trúc đúng cho màn hình có thanh hành động cố định: Scaffold
+      // tự chừa chỗ và tự xử lý vùng an toàn, không phải ghép tay bằng Column.
+      bottomNavigationBar: h == null ? null : _thanhDatPhong(context, h),
     );
   }
 
+  /// Thanh hành động cố định ở đáy màn hình.
+  Widget _thanhDatPhong(BuildContext context, Hotel h) => Material(
+        elevation: 8,
+        color: Colors.white,
+        child: SafeArea(
+          top: false,
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: FilledButton(
+              onPressed: () => context.push('/hotels/${h.id}/book', extra: h.name),
+              child: Text(h.minPrice != null
+                  ? trg('hotel.bookFrom').replaceAll('{p}', formatVnd(h.minPrice))
+                  : trg('hotel.book')),
+            ),
+          ),
+        ),
+      );
+
   Widget _body(BuildContext context, Hotel h) {
-    return Column(
-      children: [
-        Expanded(
-          child: ListView(
+    return ListView(
             padding: EdgeInsets.zero,
             children: [
               _Gallery(hotelId: h.id),
@@ -146,28 +166,11 @@ class HotelDetailScreen extends ConsumerWidget {
                     SectionHeader(trg('hotel.reviews'), padding: EdgeInsets.zero),
                     const SizedBox(height: 12),
                     _ReviewList(hotelId: h.id),
-                    const SizedBox(height: 80),
+                    const SizedBox(height: 24),
                   ],
                 ),
               ),
             ],
-          ),
-        ),
-        Material(
-          elevation: 8,
-          color: Colors.white,
-          child: SafeArea(
-            top: false,
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: FilledButton(
-                onPressed: () => context.push('/hotels/${h.id}/book', extra: h.name),
-                child: Text(h.minPrice != null ? trg('hotel.bookFrom').replaceAll('{p}', formatVnd(h.minPrice)) : trg('hotel.book')),
-              ),
-            ),
-          ),
-        ),
-      ],
     );
   }
 
@@ -289,7 +292,24 @@ class _RoomsSection extends ConsumerWidget {
             ),
             FilledButton(
               onPressed: () => context.push('/hotels/$hotelId/book?roomId=${r.id}', extra: hotelName),
-              style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8)),
+              style: FilledButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+                // BẮT BUỘC phải đặt lại minimumSize khi nút nằm trong Row.
+                //
+                // Theme dùng chung đặt `minimumSize: Size.fromHeight(52)`, mà
+                // Size.fromHeight(52) chính là Size(double.infinity, 52) — bề rộng
+                // tối thiểu VÔ HẠN. Trong Column thì vô hại vì chiều rộng đã bị giới
+                // hạn sẵn; nhưng Row cấp cho con chiều rộng KHÔNG giới hạn, nên bố trí
+                // đổ vỡ với "BoxConstraints forces an infinite width", kéo theo
+                // "RenderBox was not laid out" lan ngược lên và làm CẢ ListView không
+                // vẽ được — trang trắng trơn.
+                //
+                // Triệu chứng đánh lừa rất mạnh: ngoại lệ chỉ in ĐẦY ĐỦ một lần rồi
+                // các lần sau rút gọn thành "Another exception was thrown", nên nếu
+                // xoá log trước khi thao tác thì tưởng là không có lỗi gì.
+                // Truy ra ngày 27/08/2026 sau khi loại nhầm 10 giả thuyết khác.
+                minimumSize: const Size(0, 40),
+              ),
               child: Text(trg('common.book')),
             ),
           ]),

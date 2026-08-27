@@ -109,6 +109,22 @@ class AppTheme {
       ),
 
       // Nút.
+      //
+      // ⚠️ CẢNH BÁO — `Size.fromHeight(n)` bên dưới CHÍNH LÀ `Size(double.infinity, n)`,
+      // tức mọi nút trong app có bề rộng tối thiểu VÔ HẠN.
+      //
+      // Cố ý: để nút tự kéo hết bề ngang trong Column/form mà không phải bọc SizedBox
+      // ở hàng chục màn. Trong Column vô hại vì chiều rộng đã bị giới hạn sẵn.
+      //
+      // NHƯNG: đặt một nút làm con TRỰC TIẾP của `Row` là bố trí đổ vỡ ngay —
+      // Row cấp chiều rộng không giới hạn, ném "BoxConstraints forces an infinite
+      // width", rồi "RenderBox was not laid out" lan ngược lên và làm CẢ danh sách
+      // cha không vẽ được (trang trắng trơn, xem lịch sử ngày 27/08/2026 ở
+      // hotel_detail_screen.dart).
+      //
+      // Khi đặt nút trong Row, PHẢI làm một trong hai:
+      //   • đặt lại `minimumSize: const Size(0, 40)` cho riêng nút đó, hoặc
+      //   • bọc nút trong `Expanded` / `Flexible`.
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           backgroundColor: brand,
