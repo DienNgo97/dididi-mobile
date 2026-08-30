@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/network/api_client.dart';
@@ -32,6 +33,17 @@ class ProfileRepository {
         body: {'birthDate': yyyyMmDd},
         parse: (_) {},
       );
+
+  /// Đổi ảnh đại diện. Backend ghi vào ĐÚNG chỗ hồ sơ Cộng đồng đang dùng nên hai bên
+  /// không bao giờ lệch nhau. Trả về URL mới (đã kèm ?v= để phá cache).
+  Future<String?> uploadAvatar(MultipartFile image) => _api.postMultipart(
+        '/api/v1/profile/avatar',
+        FormData.fromMap({'image': image}),
+        parse: (d) => (d is Map) ? d['avatarUrl'] as String? : null,
+      );
+
+  Future<void> removeAvatar() =>
+      _api.deleteData<void>('/api/v1/profile/avatar', parse: (_) {});
 
   Future<void> changePassword(String currentPassword, String newPassword) => _api.postData<void>(
         '/api/v1/profile/password',

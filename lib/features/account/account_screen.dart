@@ -7,7 +7,9 @@ import '../../core/config/env.dart';
 import '../../core/i18n/l10n.dart';
 import '../../core/theme/app_theme.dart';
 import '../../shared/ui/ui_kit.dart';
+import '../../shared/widgets/auth_image.dart';
 import '../auth/auth_providers.dart';
+import '../profile/profile_repository.dart';
 
 class AccountScreen extends ConsumerWidget {
   const AccountScreen({super.key});
@@ -22,14 +24,24 @@ class AccountScreen extends ConsumerWidget {
         AppCard(
           child: Row(
             children: [
-              CircleAvatar(
-                radius: 30,
-                backgroundColor: AppTheme.brandSoft,
-                child: Text(
-                  (auth.email != null && auth.email!.isNotEmpty) ? auth.email![0].toUpperCase() : '?',
-                  style: const TextStyle(fontSize: 26, color: AppTheme.brand, fontWeight: FontWeight.w700),
-                ),
-              ),
+              // Ảnh đại diện dùng chung với hồ sơ Cộng đồng; chưa có ảnh thì vẫn là chữ cái đầu.
+              Consumer(builder: (_, r, __) {
+                final url = r.watch(profileProvider).maybeWhen(
+                      data: (p) => p.avatarUrl,
+                      orElse: () => null,
+                    );
+                if (url == null) {
+                  return CircleAvatar(
+                    radius: 30,
+                    backgroundColor: AppTheme.brandSoft,
+                    child: Text(
+                      (auth.email != null && auth.email!.isNotEmpty) ? auth.email![0].toUpperCase() : '?',
+                      style: const TextStyle(fontSize: 26, color: AppTheme.brand, fontWeight: FontWeight.w700),
+                    ),
+                  );
+                }
+                return ClipOval(child: AuthImage(url, width: 60, height: 60, fit: BoxFit.cover));
+              }),
               const SizedBox(width: 14),
               Expanded(
                 child: Column(

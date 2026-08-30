@@ -11,6 +11,12 @@ class Profile {
   /// Ngày sinh — dùng cho chương trình khuyến mãi sinh nhật (null = chưa khai báo).
   final DateTime? birthDate;
 
+  /// Đã nhập ngày sinh rồi thì KHOÁ, chỉ admin sửa hộ được (chống lạm dụng voucher sinh nhật).
+  final bool birthDateLocked;
+
+  /// Ảnh đại diện — dùng chung với hồ sơ Cộng đồng, null = hiện chữ cái đầu.
+  final String? avatarUrl;
+
   Profile({
     required this.id,
     required this.email,
@@ -20,6 +26,8 @@ class Profile {
     required this.role,
     this.emailVerified = false,
     this.birthDate,
+    this.birthDateLocked = false,
+    this.avatarUrl,
   });
 
   factory Profile.fromJson(Map<String, dynamic> j) => Profile(
@@ -33,5 +41,11 @@ class Profile {
         birthDate: (j['birthDate'] == null || '${j['birthDate']}'.isEmpty)
             ? null
             : DateTime.tryParse('${j['birthDate']}'),
+        // Backend cu (chua merge nhanh birthdate) khong tra co nay -> suy ra tu chinh ngay sinh,
+        // vi luat la "co ngay sinh = da khoa". Merge nhanh do xong thi lay thang tu server.
+        birthDateLocked: j.containsKey('birthDateLocked')
+            ? j['birthDateLocked'] == true
+            : j['birthDate'] != null,
+        avatarUrl: (j['avatarUrl'] as String?)?.isEmpty == true ? null : j['avatarUrl'] as String?,
       );
 }
