@@ -468,7 +468,10 @@ class _GroupSheetState extends ConsumerState<_GroupSheet> {
   }
 
   Future<void> _add() async {
-    final added = await context.push<bool>('/dm/group/add/${widget.convId}', extra: widget.title);
+    // Lấy tên trong ô nhập, không phải widget.title: vừa đổi tên xong mà vẫn đưa tên cũ
+    // sang màn "Thêm thành viên" thì người dùng tưởng bấm nhầm nhóm.
+    final ten = _name.text.trim().isEmpty ? widget.title : _name.text.trim();
+    final added = await context.push<bool>('/dm/group/add/${widget.convId}', extra: ten);
     if (added != true || !mounted) return;
     try {
       final info = await ref.read(socialRepositoryProvider).groupInfo(widget.convId);
@@ -508,13 +511,13 @@ class _GroupSheetState extends ConsumerState<_GroupSheet> {
               ),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-              child: Row(children: [
-                OutlinedButton.icon(
-                  onPressed: _busy ? null : _add,
-                  icon: const Icon(Icons.person_add_alt, size: 18),
-                  label: Text(trg('dm.addMember')),
-                ),
-              ]),
+              // KHÔNG bọc trong Row: theme đặt minimumSize = Size.fromHeight(50)
+              // tức rộng tối thiểu vô hạn, Row cấp constraint không giới hạn -> vỡ bố trí.
+              child: OutlinedButton.icon(
+                onPressed: _busy ? null : _add,
+                icon: const Icon(Icons.person_add_alt, size: 18),
+                label: Text(trg('dm.addMember')),
+              ),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 6),

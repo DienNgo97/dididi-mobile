@@ -31,6 +31,13 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
+  /// Chữ cái hiện trên avatar khi chưa có ảnh: ưu tiên tên thật, hết mới đến email.
+  static String _chuCaiDau(Profile p) {
+    final ten = p.fullName?.trim() ?? '';
+    if (ten.isNotEmpty) return ten[0].toUpperCase();
+    return p.email.isNotEmpty ? p.email[0].toUpperCase() : '?';
+  }
+
   Widget _body(BuildContext context, WidgetRef ref, Profile p) {
     final name = (p.fullName != null && p.fullName!.isNotEmpty) ? p.fullName! : trg('profile.noName');
     return ListView(
@@ -50,7 +57,10 @@ class ProfileScreen extends ConsumerWidget {
                             radius: 36,
                             backgroundColor: AppTheme.brandSoft,
                             child: Text(
-                              (p.email.isNotEmpty ? p.email[0] : '?').toUpperCase(),
+                              // Chữ cái của TÊN THẬT cho khớp avatar bên Cộng đồng; lấy theo email
+                              // thì "Phạm Hải Hoa" lại hiện chữ C (của customer0001@...).
+                              // Không dùng biến `name` vì nó rơi về "chưa đặt tên" khi fullName rỗng.
+                              _chuCaiDau(p),
                               style: const TextStyle(fontSize: 30, color: _brand, fontWeight: FontWeight.w700),
                             ),
                           )
