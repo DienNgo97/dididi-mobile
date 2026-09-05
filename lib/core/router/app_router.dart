@@ -17,12 +17,14 @@ import '../../features/flights/flight_booking_screen.dart';
 import '../../features/flights/return_flight_screen.dart';
 import '../../features/group/group_dashboard_screen.dart';
 import '../../features/group/my_groups_screen.dart';
+import '../i18n/l10n.dart';
 import '../../features/home/home_shell.dart';
 import '../../features/hotels/hotel_detail_screen.dart';
 import '../../features/hotels/hotel_map_screen.dart';
 import '../../features/social/chat_screen.dart';
 import '../../features/social/compose_post_screen.dart';
 import '../../features/social/dm_inbox_screen.dart';
+import '../../features/social/group_new_screen.dart';
 import '../../features/social/notifications_screen.dart';
 import '../../features/social/bookmarks_screen.dart';
 import '../../features/social/explore_screen.dart';
@@ -149,11 +151,21 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/community/requests', builder: (_, __) => const FollowRequestsScreen()),
       GoRoute(path: '/notifications', builder: (_, __) => const NotificationsScreen()),
       GoRoute(path: '/dm', builder: (_, __) => const DmInboxScreen()),
+      // 3 route dưới phải đứng TRƯỚC /dm/:id, nếu không 'archived'/'group' bị nuốt thành id.
+      GoRoute(path: '/dm/archived', builder: (_, __) => const DmInboxScreen(archived: true)),
+      GoRoute(path: '/dm/group/new', builder: (_, __) => const GroupNewScreen()),
+      GoRoute(
+        path: '/dm/group/add/:id',
+        builder: (_, s) => GroupNewScreen(
+          convId: int.parse(s.pathParameters['id']!),
+          groupName: s.extra is String ? s.extra as String : null,
+        ),
+      ),
       GoRoute(
         path: '/dm/:id',
         builder: (_, s) => ChatScreen(
           convId: int.parse(s.pathParameters['id']!),
-          title: s.extra is String ? s.extra as String : 'Tin nhắn',
+          title: s.extra is String ? s.extra as String : trg('messages'),
         ),
       ),
       GoRoute(path: '/offers', builder: (_, __) => const OffersScreen()),

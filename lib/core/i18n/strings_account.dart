@@ -552,4 +552,30 @@ const accountStrings = <String, Map<String, String>>{
   'vendor.starRating': {'vi': 'Hạng sao', 'en': 'Star rating', 'zh': '星级'},
   'vendor.stars': {'vi': '{v} sao', 'en': '{v} stars', 'zh': '{v} 星'},
   'vendor.submit': {'vi': 'Gửi đăng ký', 'en': 'Submit registration', 'zh': '提交注册'},
+
+  // ----- Ngày sinh chỉ nhập một lần + ảnh đại diện dùng chung -----
+  'profile.birthDateOnce': {
+    'vi': 'Chỉ nhập được một lần, sau đó cần admin hỗ trợ sửa.',
+    'en': 'Can be set once; after that an admin has to change it.',
+    'zh': '只能填写一次，之后需管理员协助修改。'
+  },
+  'profile.birthDateLocked': {
+    'vi': 'Ngày sinh đã khoá. Cần sửa vui lòng liên hệ hỗ trợ.',
+    'en': 'Date of birth is locked. Contact support if it needs changing.',
+    'zh': '出生日期已锁定，如需修改请联系客服。'
+  },
+  'profile.birthDateConfirm': {
+    'vi': 'Lưu ngày sinh {v}? Chỉ nhập được một lần, sau đó không tự sửa được nữa.',
+    'en': 'Save {v} as your date of birth? It can only be set once.',
+    'zh': '将出生日期保存为 {v}？只能填写一次。'
+  },
+  'profile.avatar': {'vi': 'Ảnh đại diện', 'en': 'Profile photo', 'zh': '头像'},
+  'profile.avatarPick': {'vi': 'Chọn ảnh từ thư viện', 'en': 'Choose from gallery', 'zh': '从相册选择'},
+  'profile.avatarRemove': {'vi': 'Gỡ ảnh đại diện', 'en': 'Remove photo', 'zh': '移除头像'},
+  'profile.avatarSaved': {'vi': 'Đã cập nhật ảnh đại diện.', 'en': 'Profile photo updated.', 'zh': '头像已更新。'},
+  'profile.avatarHint': {
+    'vi': 'Ảnh này dùng chung cho cả hồ sơ Cộng đồng của bạn.',
+    'en': 'This photo is shared with your Community profile.',
+    'zh': '该头像与你的社区资料共用。'
+  },
 };

@@ -234,4 +234,70 @@ const socialStrings = <String, Map<String, String>>{
   },
   'dm.sendImage': {'vi': 'Gửi ảnh', 'en': 'Send image', 'zh': '发送图片'},
   'dm.messageHint': {'vi': 'Nhắn tin…', 'en': 'Message…', 'zh': '发消息…'},
+
+  // ----- Xoá / lưu trữ cuộc trò chuyện -----
+  'dm.archive': {'vi': 'Lưu trữ', 'en': 'Archive', 'zh': '归档'},
+  'dm.unarchive': {'vi': 'Bỏ lưu trữ', 'en': 'Unarchive', 'zh': '取消归档'},
+  'dm.archived': {'vi': 'Lưu trữ', 'en': 'Archived', 'zh': '已归档'},
+  'dm.archivedDone': {'vi': 'Đã chuyển vào mục Lưu trữ.', 'en': 'Moved to Archived.', 'zh': '已移入归档。'},
+  'dm.unarchivedDone': {'vi': 'Đã đưa lại về hộp thư.', 'en': 'Moved back to your inbox.', 'zh': '已移回收件箱。'},
+  'dm.deletedDone': {
+    'vi': 'Đã xoá cuộc trò chuyện khỏi hộp thư của bạn.',
+    'en': 'The conversation was removed from your inbox.',
+    'zh': '已从你的收件箱删除该会话。'
+  },
+  'dm.emptyArchived': {'vi': 'Chưa có gì trong Lưu trữ', 'en': 'Nothing archived', 'zh': '归档中暂无内容'},
+  'dm.emptyArchivedMsg': {
+    'vi': 'Nhấn giữ một cuộc trò chuyện ở hộp thư để cất vào đây.',
+    'en': 'Long-press a conversation in your inbox to move it here.',
+    'zh': '在收件箱长按会话即可移到这里。'
+  },
+  'dm.delete': {'vi': 'Xoá cuộc trò chuyện', 'en': 'Delete conversation', 'zh': '删除会话'},
+  'dm.deleteConfirm': {
+    'vi': 'Xoá cuộc trò chuyện này khỏi hộp thư của bạn? Người kia vẫn giữ lịch sử của họ.',
+    'en': 'Delete this conversation from your inbox? The other person keeps their own copy.',
+    'zh': '从你的收件箱删除此会话？对方仍保留自己的记录。'
+  },
+  'dm.deleteGroupConfirm': {
+    'vi': 'Ẩn nhóm này khỏi hộp thư của bạn? Có tin nhắn mới thì nhóm sẽ quay lại.',
+    'en': 'Hide this group from your inbox? It comes back when there is a new message.',
+    'zh': '把该群从收件箱隐藏？有新消息时会自动回来。'
+  },
+
+  // ----- Nhóm chat -----
+  'dm.newGroup': {'vi': 'Tạo nhóm chat', 'en': 'New group chat', 'zh': '新建群聊'},
+  'dm.createGroup': {'vi': 'Tạo nhóm', 'en': 'Create group', 'zh': '创建群聊'},
+  'dm.groupName': {'vi': 'Tên nhóm', 'en': 'Group name', 'zh': '群名称'},
+  'dm.groupNamePh': {'vi': 'Ví dụ: Đà Nẵng tháng 9', 'en': 'e.g. Da Nang in September', 'zh': '例如：九月岘港'},
+  'dm.needGroupName': {'vi': 'Vui lòng đặt tên nhóm', 'en': 'Please name the group', 'zh': '请填写群名称'},
+  'dm.groupInfo': {'vi': 'Thông tin nhóm', 'en': 'Group info', 'zh': '群信息'},
+  'dm.owner': {'vi': 'Chủ nhóm', 'en': 'Owner', 'zh': '群主'},
+  'dm.rename': {'vi': 'Đổi tên', 'en': 'Rename', 'zh': '重命名'},
+  'dm.renamed': {'vi': 'Đã đổi tên nhóm.', 'en': 'Group renamed.', 'zh': '群名称已更新。'},
+  'dm.addMember': {'vi': 'Thêm thành viên', 'en': 'Add members', 'zh': '添加成员'},
+  'dm.addHint': {
+    'vi': 'Thành viên nào cũng mời thêm được, nhưng chỉ mời được người theo dõi qua lại.',
+    'en': 'Any member can invite more people, but only those who follow each other.',
+    'zh': '群内任何成员都可以邀请他人，但只能邀请互相关注的人。'
+  },
+  'dm.removeConfirm': {'vi': 'Xoá người này khỏi nhóm?', 'en': 'Remove this person from the group?', 'zh': '将该成员移出群聊？'},
+  'dm.leave': {'vi': 'Rời nhóm', 'en': 'Leave group', 'zh': '退出群聊'},
+  'dm.leaveConfirm': {
+    'vi': 'Rời khỏi nhóm này? Bạn sẽ không nhận được tin nhắn mới nữa.',
+    'en': 'Leave this group? You will stop receiving its messages.',
+    'zh': '退出该群聊？你将不再收到群消息。'
+  },
+  'dm.searchPeople': {'vi': 'Tìm theo tên hoặc @handle…', 'en': 'Search by name or @handle…', 'zh': '按名字或 @handle 搜索…'},
+  'dm.mutualOnly': {
+    'vi': 'Chỉ hiện những người theo dõi qua lại với bạn — tránh kéo người lạ vào nhóm.',
+    'en': 'Only people who follow you back are listed — so nobody drags in a stranger.',
+    'zh': '仅显示与你互相关注的人——避免把陌生人拉进群。'
+  },
+  'dm.noMutual': {'vi': 'Chưa có ai để mời', 'en': 'No one to invite', 'zh': '暂无可邀请的人'},
+  'dm.noMutualMsg': {
+    'vi': 'Chỉ mời được người theo dõi qua lại với bạn. Hãy theo dõi nhau trước đã.',
+    'en': 'You can only invite people who follow you back. Follow each other first.',
+    'zh': '只能邀请与你互相关注的人，请先互相关注。'
+  },
+  'dm.pickOne': {'vi': 'Hãy chọn ít nhất một người.', 'en': 'Please pick at least one person.', 'zh': '请至少选择一个人。'},
 };

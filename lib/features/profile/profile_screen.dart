@@ -1,10 +1,13 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../core/i18n/l10n.dart';
 import '../../core/theme/app_theme.dart';
 import '../../shared/format.dart';
 import '../../shared/ui/ui_kit.dart';
+import '../../shared/widgets/auth_image.dart';
 import '../../shared/widgets/error_view.dart';
 import '../auth/auth_providers.dart';
 import 'profile_models.dart';
@@ -28,6 +31,13 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
+  /// Chữ cái hiện trên avatar khi chưa có ảnh: ưu tiên tên thật, hết mới đến email.
+  static String _chuCaiDau(Profile p) {
+    final ten = p.fullName?.trim() ?? '';
+    if (ten.isNotEmpty) return ten[0].toUpperCase();
+    return p.email.isNotEmpty ? p.email[0].toUpperCase() : '?';
+  }
+
   Widget _body(BuildContext context, WidgetRef ref, Profile p) {
     final name = (p.fullName != null && p.fullName!.isNotEmpty) ? p.fullName! : trg('profile.noName');
     return ListView(
@@ -36,12 +46,36 @@ class ProfileScreen extends ConsumerWidget {
         AppCard(
           child: Column(
             children: [
-              CircleAvatar(
-                radius: 36,
-                backgroundColor: AppTheme.brandSoft,
-                child: Text(
-                  (p.email.isNotEmpty ? p.email[0] : '?').toUpperCase(),
-                  style: const TextStyle(fontSize: 30, color: _brand, fontWeight: FontWeight.w700),
+              // Ảnh đại diện DÙNG CHUNG với hồ sơ Cộng đồng — đổi ở đâu cũng ra cùng một ảnh.
+              GestureDetector(
+                onTap: () => _avatarActions(context, ref, p),
+                child: Stack(
+                  alignment: Alignment.bottomRight,
+                  children: [
+                    p.avatarUrl == null
+                        ? CircleAvatar(
+                            radius: 36,
+                            backgroundColor: AppTheme.brandSoft,
+                            child: Text(
+                              // Chữ cái của TÊN THẬT cho khớp avatar bên Cộng đồng; lấy theo email
+                              // thì "Phạm Hải Hoa" lại hiện chữ C (của customer0001@...).
+                              // Không dùng biến `name` vì nó rơi về "chưa đặt tên" khi fullName rỗng.
+                              _chuCaiDau(p),
+                              style: const TextStyle(fontSize: 30, color: _brand, fontWeight: FontWeight.w700),
+                            ),
+                          )
+                        : ClipOval(
+                            child: AuthImage(p.avatarUrl!, width: 72, height: 72, fit: BoxFit.cover),
+                          ),
+                    Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                        color: _brand,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.photo_camera_outlined, size: 14, color: Colors.white),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 12),
@@ -82,12 +116,31 @@ class ProfileScreen extends ConsumerWidget {
               ),
               const SoftDivider(),
               // Ngày sinh: cần cho chương trình khuyến mãi sinh nhật (tặng voucher đúng ngày).
+              // Nhập rồi thì KHOÁ — hiện ổ khoá thay bút chì, bấm vào chỉ giải thích, không mở
+              // date picker nữa (trước đây bấm vào là chắc chắn ăn lỗi 409 từ server).
               ListTile(
+                isThreeLine: true,
                 leading: const Icon(Icons.cake_outlined, color: _brand),
                 title: Text(trg('profile.birthDate')),
-                subtitle: Text(p.birthDate == null ? trg('profile.birthDateNone') : dmy(p.birthDate!)),
-                trailing: const Icon(Icons.edit_outlined, size: 20),
-                onTap: () => _editBirthDate(context, ref, p),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(p.birthDate == null ? trg('profile.birthDateNone') : dmy(p.birthDate!)),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 2),
+                      child: Text(
+                        trg(p.birthDateLocked ? 'profile.birthDateLocked' : 'profile.birthDateOnce'),
+                        style: const TextStyle(fontSize: 11.5, color: AppTheme.muted),
+                      ),
+                    ),
+                  ],
+                ),
+                trailing: Icon(p.birthDateLocked ? Icons.lock_outline : Icons.edit_outlined,
+                    size: 20, color: p.birthDateLocked ? AppTheme.muted : null),
+                onTap: () => p.birthDateLocked
+                    ? ScaffoldMessenger.of(context)
+                        .showSnackBar(SnackBar(content: Text(trg('profile.birthDateLocked'))))
+                    : _editBirthDate(context, ref, p),
               ),
               const SoftDivider(),
               ListTile(
@@ -222,6 +275,63 @@ class ProfileScreen extends ConsumerWidget {
 
   Widget _badge(String label, bool ok) => StatusBadge(label, ok ? AppTheme.brand : const Color(0xFFC0392B));
 
+  // ---------------- Ảnh đại diện (dùng chung với hồ sơ Cộng đồng) ----------------
+  Future<void> _avatarActions(BuildContext context, WidgetRef ref, Profile p) async {
+    final choice = await showModalBottomSheet<String>(
+      context: context,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+              child: Text(trg('profile.avatar'),
+                  style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+              child: Text(trg('profile.avatarHint'),
+                  style: const TextStyle(fontSize: 12, color: AppTheme.muted)),
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library_outlined),
+              title: Text(trg('profile.avatarPick')),
+              onTap: () => Navigator.pop(ctx, 'pick'),
+            ),
+            if (p.avatarUrl != null)
+              ListTile(
+                leading: const Icon(Icons.delete_outline, color: Color(0xFFC0392B)),
+                title: Text(trg('profile.avatarRemove'),
+                    style: const TextStyle(color: Color(0xFFC0392B))),
+                onTap: () => Navigator.pop(ctx, 'remove'),
+              ),
+            const SizedBox(height: 6),
+          ],
+        ),
+      ),
+    );
+    if (choice == null || !context.mounted) return;
+    final messenger = ScaffoldMessenger.of(context);
+    final repo = ref.read(profileRepositoryProvider);
+    try {
+      if (choice == 'remove') {
+        await repo.removeAvatar();
+      } else {
+        final picked = await ImagePicker()
+            .pickImage(source: ImageSource.gallery, imageQuality: 85, maxWidth: 1000);
+        if (picked == null) return;
+        final bytes = await picked.readAsBytes();
+        await repo.uploadAvatar(MultipartFile.fromBytes(bytes, filename: picked.name));
+      }
+      if (!context.mounted) return;
+      ref.invalidate(profileProvider);
+      messenger.showSnackBar(SnackBar(content: Text(trg('profile.avatarSaved'))));
+    } catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text(trg('account.errorWith').replaceAll('{v}', '$e'))));
+    }
+  }
+
   // ---------------- Ngày sinh (chương trình khuyến mãi sinh nhật) ----------------
   Future<void> _editBirthDate(BuildContext context, WidgetRef ref, Profile p) async {
     final messenger = ScaffoldMessenger.of(context);
@@ -234,7 +344,19 @@ class ProfileScreen extends ConsumerWidget {
       lastDate: today, // chặn ngày tương lai ngay từ giao diện (backend cũng chặn)
       helpText: trg('profile.birthDate'),
     );
-    if (d == null) return;
+    if (d == null || !context.mounted) return;
+    // Nhập một lần là khoá -> hỏi lại cho chắc, sửa sai phải nhờ admin.
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        content: Text(trg('profile.birthDateConfirm').replaceAll('{v}', dmy(d))),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(trg('common.cancel'))),
+          TextButton(onPressed: () => Navigator.pop(ctx, true), child: Text(trg('common.ok'))),
+        ],
+      ),
+    );
+    if (ok != true) return;
     try {
       await ref.read(profileRepositoryProvider).updateBirthDate(ymd(d));
       ref.invalidate(profileProvider);

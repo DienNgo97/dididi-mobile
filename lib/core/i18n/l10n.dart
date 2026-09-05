@@ -77,6 +77,7 @@ class L10n {
     'common.search': {'vi': 'Tìm', 'en': 'Search', 'zh': '搜索'},
     'common.apply': {'vi': 'Áp dụng', 'en': 'Apply', 'zh': '应用'},
     'common.ok': {'vi': 'Đồng ý', 'en': 'OK', 'zh': '好的'},
+    'common.saving': {'vi': 'Đang lưu…', 'en': 'Saving…', 'zh': '保存中…'},
     'common.later': {'vi': 'Để sau', 'en': 'Later', 'zh': '稍后'},
     'common.loading': {'vi': 'Đang tải…', 'en': 'Loading…', 'zh': '加载中…'},
     'common.error': {'vi': 'Đã xảy ra lỗi, vui lòng thử lại.', 'en': 'Something went wrong, please try again.', 'zh': '出错了，请重试。'},

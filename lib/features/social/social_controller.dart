@@ -36,7 +36,27 @@ final dmInboxProvider = FutureProvider<List<Conversation>>(
   (ref) => ref.read(socialRepositoryProvider).inbox(),
 );
 
+/// Hộp thư Lưu trữ (những hội thoại đã cất đi).
+final dmArchivedProvider = FutureProvider<List<Conversation>>(
+  (ref) => ref.read(socialRepositoryProvider).archivedInbox(),
+);
+
 /// Tin nhắn trong 1 hội thoại.
 final conversationMessagesProvider = FutureProvider.family<List<Message>, int>(
   (ref, convId) => ref.read(socialRepositoryProvider).messages(convId),
+);
+
+/// Thành viên + quyền chủ nhóm của hội thoại đang mở.
+final groupInfoProvider = FutureProvider.autoDispose.family<GroupInfo, int>(
+  (ref, convId) => ref.read(socialRepositoryProvider).groupInfo(convId),
+);
+
+/// Bạn bè mời vào nhóm được (theo dõi qua lại). Tham số: convId (0 = đang tạo nhóm mới) + từ khoá.
+/// autoDispose: key co ca tu khoa tim nen khong bo thi go 6 chu = 6 provider song mai.
+final invitableFriendsProvider =
+    FutureProvider.autoDispose.family<List<Actor>, ({int convId, String q})>(
+  (ref, arg) => ref.read(socialRepositoryProvider).invitableFriends(
+        q: arg.q.isEmpty ? null : arg.q,
+        convId: arg.convId == 0 ? null : arg.convId,
+      ),
 );

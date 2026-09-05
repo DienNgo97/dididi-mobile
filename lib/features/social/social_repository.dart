@@ -275,4 +275,69 @@ class SocialRepository {
 
   Future<void> markConversationRead(int convId) =>
       _api.postData<void>('/api/v1/social/conversations/$convId/read', parse: (_) {});
+
+  // ---- Xoá / lưu trữ cuộc trò chuyện (chỉ ảnh hưởng phía mình) ----
+
+  Future<List<Conversation>> archivedInbox() => _api.getData(
+        '/api/v1/social/conversations/archived',
+        parse: (d) => ((d as List?) ?? const [])
+            .map((e) => Conversation.fromJson(e as Map<String, dynamic>))
+            .toList(),
+      );
+
+  /// Xoá đoạn chat ở phía mình. Người kia vẫn giữ lịch sử; họ nhắn tiếp thì hội thoại
+  /// quay lại hộp thư nhưng chỉ hiện tin mới.
+  Future<void> deleteConversation(int convId) =>
+      _api.deleteData<void>('/api/v1/social/conversations/$convId', parse: (_) {});
+
+  Future<void> archiveConversation(int convId, bool on) => _api.postData<void>(
+        '/api/v1/social/conversations/$convId/archive',
+        query: {'on': on},
+        parse: (_) {},
+      );
+
+  // ---- Nhóm chat ----
+
+  /// Người mời vào nhóm được: chỉ ai theo dõi qua lại với mình (backend chặn, đây là để UI
+  /// không bày ra rồi bấm xong mới ăn lỗi). convId != null thì bỏ luôn người đã trong nhóm.
+  Future<List<Actor>> invitableFriends({String? q, int? convId}) => _api.getData(
+        '/api/v1/social/conversations/invitable',
+        query: {
+          if (q != null && q.isNotEmpty) 'q': q,
+          if (convId != null) 'convId': convId,
+        },
+        parse: (d) =>
+            ((d as List?) ?? const []).map((e) => Actor.fromJson(e as Map<String, dynamic>)).toList(),
+      );
+
+  Future<int> createGroup(String title, List<int> memberIds) => _api.postData(
+        '/api/v1/social/conversations/group',
+        query: {'title': title, 'memberIds': memberIds},
+        parse: (d) => asNum((d as Map)['conversationId'])?.toInt() ?? 0,
+      );
+
+  Future<GroupInfo> groupInfo(int convId) => _api.getData(
+        '/api/v1/social/conversations/$convId/members',
+        parse: (d) => GroupInfo.fromJson(d as Map<String, dynamic>),
+      );
+
+  Future<void> addMembers(int convId, List<int> memberIds) => _api.postData<void>(
+        '/api/v1/social/conversations/$convId/members',
+        query: {'memberIds': memberIds},
+        parse: (_) {},
+      );
+
+  Future<void> removeMember(int convId, int userId) => _api.deleteData<void>(
+        '/api/v1/social/conversations/$convId/members/$userId',
+        parse: (_) {},
+      );
+
+  Future<void> renameGroup(int convId, String title) => _api.postData<void>(
+        '/api/v1/social/conversations/$convId/rename',
+        query: {'title': title},
+        parse: (_) {},
+      );
+
+  Future<void> leaveGroup(int convId) =>
+      _api.postData<void>('/api/v1/social/conversations/$convId/leave', parse: (_) {});
 }
